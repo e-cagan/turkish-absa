@@ -1,0 +1,20 @@
+model:
+  name: dbmdz/bert-base-turkish-cased   # BERTurk
+  max_length: 256
+
+aspects:                                 # e-ticaret için başlangıç seti
+  - kargo
+  - fiyat
+  - kalite
+  - musteri_hizmetleri
+  - beden_uyum
+
+sentiment_labels: [negatif, notr, pozitif]
+
+data:
+  hf_id: maydogan/Turkish_SentimentAnalysis_TRSAv1
+  min_chars: 40          # below this, reviews rarely contain >1 aspect
+  splits_dir: data/splits
+  test_size: 0.15
+  val_size: 0.15
+  seed: 42

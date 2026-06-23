@@ -1,0 +1,25 @@
+# Environments
+.venv/
+.env
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.python-version
+*.lock
+.ruff_cache/
+.ipynb_checkpoints/
+
+# Data & model artifacts (too big / regenerable)
+data/
+*.parquet
+*.csv
+models/
+*.onnx
+mlruns/
+
+# OS / editor
+.DS_Store
+.vscode/
+.idea/
