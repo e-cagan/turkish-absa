@@ -217,13 +217,26 @@ def _done_ids(out_path: Path) -> set:
     return done
 
 
+def _sample(train: pl.DataFrame, lc: dict, seed: int) -> pl.DataFrame:
+    """Stable random head (so growing sample_n stays a superset) + an optional
+    keyword-boosted draw that oversamples the data-starved aspects."""
+    shuffled = train.sample(fraction=1.0, shuffle=True, seed=seed)
+    base = shuffled.head(lc["sample_n"])
+    kws = lc.get("boost_keywords")
+    if not kws:
+        return base
+    pattern = "(?i)" + "|".join(kws)
+    boost = shuffled.filter(pl.col("text").str.contains(pattern)).head(lc.get("boost_n", 1500))
+    return pl.concat([base, boost]).unique(subset="id", keep="first")
+
+
 def run(cfg: dict) -> None:
     lc = cfg["labeling"]
     out_path = Path(lc["out_path"])
     out_path.parent.mkdir(parents=True, exist_ok=True)
 
     train = pl.read_parquet(Path(cfg["data"]["splits_dir"]) / "train.parquet")
-    sample = train.sample(fraction=1.0, shuffle=True, seed=cfg["data"]["seed"]).head(lc["sample_n"])
+    sample = _sample(train, lc, cfg["data"]["seed"])
 
     done = _done_ids(out_path)
     todo = [r for r in sample.to_dicts() if r["id"] not in done]

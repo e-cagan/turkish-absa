@@ -56,16 +56,27 @@ def load_labeled(path: str) -> list[dict]:
 
 
 def split_reviews(rows: list[dict], cfg: dict) -> tuple[list, list, list]:
-    """Deterministic review-level split: test = gold holdout, then val, then train.
-    Splitting by review (not by pair) prevents leakage of a review across splits."""
+    """Pin the gold holdout to the verified ids in data/gold.jsonl and exclude
+    them from train/val, so the eval set is stable and leak-free across reruns.
+    Falls back to a size-independent split only on the very first run."""
     rng = np.random.default_rng(cfg["data"]["seed"])
+    gold_file = Path("data/gold.jsonl")
+    if gold_file.exists():
+        gold_ids = {json.loads(l)["id"] for l in open(gold_file, encoding="utf-8")}
+        pool = [r for r in rows if r["id"] not in gold_ids]
+        gold = [r for r in rows if r["id"] in gold_ids]
+        idx = rng.permutation(len(pool))
+        val_n = int(len(pool) * cfg["train"]["val_frac"])
+        val = [pool[i] for i in idx[:val_n]]
+        train = [pool[i] for i in idx[val_n:]]
+        return train, val, gold
+    # first run only: no verified gold yet
     idx = rng.permutation(len(rows))
-    gold_n = cfg["train"]["gold_n"]
-    val_n = int((len(rows) - gold_n) * cfg["train"]["val_frac"])
-    test = [rows[i] for i in idx[:gold_n]]
-    val = [rows[i] for i in idx[gold_n : gold_n + val_n]]
-    train = [rows[i] for i in idx[gold_n + val_n :]]
-    return train, val, test
+    g = cfg["train"]["gold_n"]
+    v = int((len(rows) - g) * cfg["train"]["val_frac"])
+    return ([rows[i] for i in idx[g + v:]],
+            [rows[i] for i in idx[g:g + v]],
+            [rows[i] for i in idx[:g]])
 
 
 def build_pairs(rows: list[dict], cfg: dict) -> list[dict]:
@@ -133,13 +144,14 @@ def main(cfg: dict) -> None:
     rows = load_labeled(cfg["labeling"]["out_path"])
     train_rows, val_rows, gold_rows = split_reviews(rows, cfg)
 
-    # Persist gold candidates (weak labels) for manual verification -> data/gold.jsonl
     gold_path = Path(cfg["data"]["splits_dir"]).parent / "gold_candidates.jsonl"
-    with open(gold_path, "w", encoding="utf-8") as f:
-        for r in gold_rows:
-            f.write(json.dumps(r, ensure_ascii=False) + "\n")
-    print(f"reviews -> train {len(train_rows)} | val {len(val_rows)} | gold {len(gold_rows)}")
-    print(f"gold candidates written to {gold_path} (verify -> data/gold.jsonl)")
+    if not Path("data/gold.jsonl").exists():
+        with open(gold_path, "w", encoding="utf-8") as f:
+            for r in gold_rows:
+                f.write(json.dumps(r, ensure_ascii=False) + "\n")
+        print(f"gold candidates -> {gold_path} (verify -> data/gold.jsonl)")
+    else:
+        print(f"gold pinned to data/gold.jsonl ({len(gold_rows)} reviews, excluded from train)")
 
     train_pairs = build_pairs(train_rows, cfg)
     val_pairs = build_pairs(val_rows, cfg)

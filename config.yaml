@@ -6,6 +6,8 @@ labeling:
   provider: ollama               # anthropic | ollama
   model: gemma3:12b              # claude-sonnet-4-6 for higher-quality labels
   sample_n: 2000                 # how many train reviews to weak-label
+  boost_n: 2000                  # boosting classes with less samples
+  boost_keywords: ["iade","satıcı","satici","destek","geri gönder","yanlış ürün","sipariş geldi","kalıcı","kalici","dayan","uzun süre","çabuk bit","gidiyor","yetiyor","aylarca","haftalarca"]
   workers: 1                     # concurrent API calls (I/O bound)
   max_retries: 2
   out_path: data/labeled.jsonl
@@ -33,7 +35,7 @@ train:
   out_dir: models/absa
   gold_n: 180
   val_frac: 0.1
-  epochs: 3
+  epochs: 5
   batch_size: 8
   grad_accum: 2
   lr: 2.0e-5
