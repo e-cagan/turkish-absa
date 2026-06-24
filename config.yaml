@@ -2,12 +2,22 @@ model:
   name: dbmdz/bert-base-turkish-cased   # BERTurk
   max_length: 256
 
-aspects:                                 # e-ticaret için başlangıç seti
-  - kargo
-  - fiyat
-  - kalite
-  - musteri_hizmetleri
-  - beden_uyum
+labeling:
+  provider: ollama               # anthropic | ollama
+  model: gemma3:12b              # claude-sonnet-4-6 for higher-quality labels
+  sample_n: 2000                 # how many train reviews to weak-label
+  workers: 1                     # concurrent API calls (I/O bound)
+  max_retries: 2
+  out_path: data/labeled.jsonl
+
+aspects:                         # closed taxonomy: name -> definition (injected into the prompt)
+  urun_kalitesi: "ürünün kalitesi, etkisi, işe yarayıp yaramadığı, dokusu/kıvamı"
+  fiyat: "fiyat, pahalı/ucuz olması, fiyat-performans"
+  kargo_teslimat: "kargo hızı, teslimat süresi, kargo/teslimat süreci"
+  ambalaj: "paketleme, kutu/şişe durumu, sızıntı, hasar"
+  koku: "ürünün kokusu"
+  kalicilik: "etkinin veya kokunun ne kadar kalıcı olduğu"
+  musteri_hizmetleri: "satıcı/mağaza iletişimi, iade, destek süreci"
 
 sentiment_labels: [negatif, notr, pozitif]
 
