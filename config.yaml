@@ -32,7 +32,7 @@ data:
   seed: 42
 
 train:
-  out_dir: models/absa
+  out_dir: e-cagan/turkish-absa-berturk
   gold_n: 180
   val_frac: 0.1
   epochs: 5
@@ -40,3 +40,6 @@ train:
   grad_accum: 2
   lr: 2.0e-5
   max_length: 192
+
+serve:
+  model_id: e-cagan/turkish-absa-berturk    

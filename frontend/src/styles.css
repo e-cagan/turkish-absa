@@ -1,0 +1,108 @@
+:root {
+  --ground: #FCFCFD;
+  --panel: #FFFFFF;
+  --line: #E9E9EF;
+  --ink: #17171F;
+  --muted: #6C6C78;
+  --accent: #4338CA;
+  --pos: #0E8C5A; --pos-bg: #E7F4EE;
+  --neg: #C0392B; --neg-bg: #FBEAE8;
+  --neu: #B7791F; --neu-bg: #FBF3E2;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--ground);
+  color: var(--ink);
+  font-family: 'Inter', system-ui, sans-serif;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+.wrap { max-width: 720px; margin: 0 auto; padding: 56px 24px 80px; }
+
+/* Hero */
+.hero { margin-bottom: 36px; }
+.eyebrow {
+  font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: 0.12em;
+  text-transform: uppercase; color: var(--accent); margin: 0 0 14px;
+}
+h1 {
+  font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 34px;
+  line-height: 1.12; letter-spacing: -0.02em; margin: 0 0 12px;
+}
+.lede { color: var(--muted); font-size: 16px; margin: 0; max-width: 56ch; }
+
+/* Input card */
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 20px; }
+textarea {
+  width: 100%; min-height: 96px; padding: 14px; resize: vertical;
+  border: 1px solid var(--line); border-radius: 10px; background: #fff;
+  font: inherit; color: var(--ink);
+}
+textarea:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; border-color: transparent; }
+
+.row { display: flex; gap: 12px; align-items: center; margin-top: 14px; flex-wrap: wrap; }
+.analyze {
+  font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 15px;
+  background: var(--ink); color: #fff; border: 0; border-radius: 10px;
+  padding: 12px 22px; cursor: pointer; transition: transform .12s ease, opacity .12s ease;
+}
+.analyze:hover:not(:disabled) { transform: translateY(-1px); }
+.analyze:disabled { opacity: .55; cursor: default; }
+.analyze:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.examples { display: flex; gap: 8px; flex-wrap: wrap; }
+.chip {
+  font-family: 'Inter', sans-serif; font-size: 13px; color: var(--muted);
+  background: #fff; border: 1px solid var(--line); border-radius: 999px;
+  padding: 6px 12px; cursor: pointer;
+}
+.chip:hover { border-color: var(--accent); color: var(--accent); }
+.chip:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+
+/* Results */
+.results { margin-top: 28px; }
+.results-head { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 16px; }
+.results-head h2 {
+  font-family: 'Space Grotesk', sans-serif; font-size: 15px; font-weight: 600;
+  letter-spacing: 0.02em; margin: 0; text-transform: uppercase; color: var(--muted);
+}
+.count { font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--muted); }
+
+.aspect {
+  border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; margin-bottom: 10px;
+  animation: rise .28s ease both;
+}
+@keyframes rise { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+
+.aspect-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.aspect-name { font-weight: 600; font-size: 15px; }
+.pill {
+  font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 500;
+  padding: 3px 10px; border-radius: 999px; white-space: nowrap;
+}
+.meter { height: 4px; border-radius: 999px; background: var(--line); margin-top: 12px; overflow: hidden; }
+.meter > span { display: block; height: 100%; border-radius: 999px; }
+.conf { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--muted); margin-top: 6px; }
+
+.empty, .error {
+  border: 1px dashed var(--line); border-radius: 12px; padding: 22px; text-align: center;
+  color: var(--muted); font-size: 15px;
+}
+.error { border-style: solid; border-color: var(--neg); color: var(--neg); background: var(--neg-bg); }
+
+.footer { margin-top: 48px; font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--muted); }
+.footer span { color: var(--ink); }
+
+@media (prefers-reduced-motion: reduce) {
+  .aspect { animation: none; }
+  .analyze { transition: none; }
+}
+
+@media (max-width: 520px) {
+  .wrap { padding: 40px 18px 64px; }
+  h1 { font-size: 28px; }
+}
